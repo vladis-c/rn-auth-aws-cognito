@@ -1,8 +1,9 @@
 import React from "react"
 import { Text, View, StyleSheet, Button } from "react-native"
 import useAuthentication from "../hooks/useAuthentication"
+import { HomePageProps } from "../navigation/navigation-types"
 
-const Home = ({ navigation }: any) => {
+const Home = ({ navigation }: HomePageProps) => {
   const Authentication = useAuthentication(() => navigation.navigate("Login"))
   return (
     <View style={styles.container}>
