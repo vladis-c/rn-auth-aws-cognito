@@ -1,4 +1,12 @@
 import React, { createContext, useEffect, useMemo, useState } from "react"
+import {
+  //@ts-ignore
+  COGNITO_CLIENT_ID,
+  //@ts-ignore
+  COGNITO_USER_POOL_URL,
+  //@ts-ignore
+  COGNITO_REDIRECT_URL,
+} from "react-native-dotenv"
 import * as WebBrowser from "expo-web-browser"
 import {
   useAuthRequest,
@@ -31,9 +39,9 @@ export const LoginContext = createContext<LoginProps | null>(null)
 
 WebBrowser.maybeCompleteAuthSession()
 
-const clientId = process.env.COGNITO_CLIENT_ID ?? ""
-const userPoolUrl = process.env.COGNITO_USER_POOL_URL ?? ""
-const redirectUri = process.env.COGNITO_REDIRECT_URL ?? ""
+const clientId = COGNITO_CLIENT_ID
+const userPoolUrl = COGNITO_USER_POOL_URL
+const redirectUri = COGNITO_REDIRECT_URL
 
 const LoginContextProvider = ({ children }: LoginContextProviderProps) => {
   const [intervalId, setIntervalId] = useState<NodeJS.Timeout | null>(null)
