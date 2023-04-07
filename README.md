@@ -17,7 +17,7 @@ Make sure the _expo-cli_ is installed with `npm install -g expo-cli`
 
 `yarn` to install dependencies
 
-`npx expo start` to launch the server locally. Press `a` or `i` to launch on Android or Ios.
+`yarn expo start` to launch the server locally. Press `a` or `i` to launch on Android or Ios.
 Make sure to be in the same network if you are using real devices, and download _Expo Go_ app
 
 ## Authentication
