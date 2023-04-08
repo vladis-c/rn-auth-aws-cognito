@@ -1,4 +1,5 @@
 import React, { createContext, useEffect, useMemo, useState } from "react"
+
 import {
   //@ts-ignore
   COGNITO_CLIENT_ID,
@@ -29,6 +30,7 @@ export interface LoginProps {
   logout: () => Promise<void>
   authTokens: TokenResponse | null
   setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>
+  refreshToken: () => Promise<void>
 }
 
 interface LoginContextProviderProps {
@@ -44,7 +46,6 @@ const userPoolUrl = COGNITO_USER_POOL_URL
 const redirectUri = COGNITO_REDIRECT_URL
 
 const LoginContextProvider = ({ children }: LoginContextProviderProps) => {
-  const [intervalId, setIntervalId] = useState<NodeJS.Timeout | null>(null)
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false)
   const [authTokens, setAuthTokens] = useState<TokenResponse | null>(null)
   const discoveryDocument = useMemo<DiscoveryDocument>(
@@ -79,7 +80,7 @@ const LoginContextProvider = ({ children }: LoginContextProviderProps) => {
     }
   }
 
-  const refreshToken = async () => {
+  const refreshToken = async (): Promise<void> => {
     try {
       if (authTokens?.shouldRefresh()) {
         const refreshResponse = await authTokens.refreshAsync(
@@ -89,6 +90,7 @@ const LoginContextProvider = ({ children }: LoginContextProviderProps) => {
         setAuthTokens(refreshResponse)
       }
     } catch (error) {
+      console.error(error)
       setAuthTokens(null)
     }
   }
@@ -105,6 +107,7 @@ const LoginContextProvider = ({ children }: LoginContextProviderProps) => {
         setAuthTokens(exchangeTokenResponse)
       } catch (error) {
         console.error(error)
+        setAuthTokens(null)
       }
     }
 
@@ -127,7 +130,6 @@ const LoginContextProvider = ({ children }: LoginContextProviderProps) => {
     }
   }, [discoveryDocument, request, response])
 
-  // interval effect to refresh the token
   useEffect(() => {
     console.log("authTokens: " + JSON.stringify(authTokens))
     if (authTokens) {
@@ -135,21 +137,18 @@ const LoginContextProvider = ({ children }: LoginContextProviderProps) => {
     } else {
       setIsLoggedIn(false)
     }
-    // if (!authTokens || !authTokens.expiresIn) {
-    //   clearInterval(intervalId!)
-    //   return
-    // }
-    // const newIntervalId = setInterval(() => {
-    //   refreshToken()
-    // }, authTokens?.expiresIn * 1000 - 60) // 1 minute less than given, to be safe
-
-    // setIntervalId(newIntervalId)
-    // return () => clearInterval(newIntervalId)
   }, [authTokens])
 
   return (
     <LoginContext.Provider
-      value={{ isLoggedIn, setIsLoggedIn, signinSignup, logout, authTokens }}
+      value={{
+        isLoggedIn,
+        setIsLoggedIn,
+        signinSignup,
+        logout,
+        authTokens,
+        refreshToken,
+      }}
     >
       {children}
     </LoginContext.Provider>
