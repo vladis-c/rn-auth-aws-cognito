@@ -1,23 +1,11 @@
-import {
-  CommonActions,
-  createNavigationContainerRef,
-  LinkingOptions,
-} from "@react-navigation/native"
+import { LinkingOptions } from "@react-navigation/native"
 import * as Linking from "expo-linking"
-
-export const navigationRef = createNavigationContainerRef()
-
-export const navigate = (name: any, params?: object) => {
-  if (navigationRef.isReady()) {
-    navigationRef.dispatch(CommonActions.navigate(name, params))
-  }
-}
+import { MAIN_NAV } from "./navigation-types"
 
 const prefix = Linking.createURL("/")
 const config = {
   screens: {
-    ["Login"]: "login",
-    ["Home"]: "home",
+    [MAIN_NAV.HOME]: "home",
   },
 }
 export const linking: LinkingOptions<ReactNavigation.RootParamList> = {

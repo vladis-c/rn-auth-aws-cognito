@@ -1,5 +1,5 @@
 import React, { createContext, useEffect, useMemo, useState } from "react"
-
+import * as SecureStore from "expo-secure-store"
 import {
   //@ts-ignore
   COGNITO_CLIENT_ID,
@@ -21,6 +21,7 @@ import {
   AuthSessionResult,
 } from "expo-auth-session"
 import { Alert } from "react-native"
+import { useStartApp } from "../hooks/useStartApp"
 
 export interface LoginProps {
   isLoggedIn: boolean
@@ -30,6 +31,7 @@ export interface LoginProps {
   logout: () => Promise<void>
   authTokens: TokenResponse | null
   setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>
+  setAuthTokens: React.Dispatch<React.SetStateAction<TokenResponse | null>>
   refreshToken: () => Promise<void>
 }
 
@@ -48,6 +50,7 @@ const redirectUri: string =
   COGNITO_REDIRECT_URL || process.env.COGNITO_REDIRECT_URL
 
 const LoginContextProvider = ({ children }: LoginContextProviderProps) => {
+  const authTokensFromSecureStore = useStartApp()
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false)
   const [authTokens, setAuthTokens] = useState<TokenResponse | null>(null)
   const discoveryDocument = useMemo<DiscoveryDocument>(
@@ -103,6 +106,12 @@ const LoginContextProvider = ({ children }: LoginContextProviderProps) => {
   }
 
   useEffect(() => {
+    if (authTokensFromSecureStore) {
+      setAuthTokens(authTokensFromSecureStore)
+    }
+  }, [authTokensFromSecureStore])
+
+  useEffect(() => {
     const exchangeFn = async (
       exchangeTokenReq: AccessTokenRequestConfig
     ): Promise<void> => {
@@ -117,7 +126,6 @@ const LoginContextProvider = ({ children }: LoginContextProviderProps) => {
         setAuthTokens(null)
       }
     }
-
     if (response?.type === "error") {
       Alert.alert(
         "Authentication error",
@@ -140,6 +148,7 @@ const LoginContextProvider = ({ children }: LoginContextProviderProps) => {
   useEffect(() => {
     console.log("authTokens: " + JSON.stringify(authTokens))
     if (authTokens) {
+      SecureStore.setItemAsync("authTokens", JSON.stringify(authTokens))
       setIsLoggedIn(true)
     } else {
       setIsLoggedIn(false)
@@ -150,6 +159,7 @@ const LoginContextProvider = ({ children }: LoginContextProviderProps) => {
     <LoginContext.Provider
       value={{
         isLoggedIn,
+        setAuthTokens,
         setIsLoggedIn,
         signinSignup,
         logout,
