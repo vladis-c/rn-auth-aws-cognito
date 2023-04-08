@@ -151,6 +151,7 @@ const LoginContextProvider = ({ children }: LoginContextProviderProps) => {
       SecureStore.setItemAsync("authTokens", JSON.stringify(authTokens))
       setIsLoggedIn(true)
     } else {
+      SecureStore.deleteItemAsync("authTokens")
       setIsLoggedIn(false)
     }
   }, [authTokens])
