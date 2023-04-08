@@ -4,7 +4,7 @@ import { Button, View, StyleSheet, Text } from "react-native"
 import { LoginContext, LoginProps } from "../context/LoginContext"
 
 const Login = () => {
-  const { authTokens, logout, promptAsync } = useContext(
+  const { authTokens, logout, signinSignup } = useContext(
     LoginContext
   ) as LoginProps
 
@@ -14,7 +14,7 @@ const Login = () => {
       {authTokens ? (
         <Button title="Logout" onPress={() => logout()} />
       ) : (
-        <Button title="Login" onPress={() => promptAsync()} />
+        <Button title="Login" onPress={() => signinSignup()} />
       )}
     </View>
   )

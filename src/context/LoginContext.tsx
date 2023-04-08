@@ -23,7 +23,7 @@ import { Alert } from "react-native"
 
 export interface LoginProps {
   isLoggedIn: boolean
-  promptAsync: (
+  signinSignup: (
     options?: AuthRequestPromptOptions | undefined
   ) => Promise<AuthSessionResult>
   logout: () => Promise<void>
@@ -56,7 +56,7 @@ const LoginContextProvider = ({ children }: LoginContextProviderProps) => {
     []
   )
 
-  const [request, response, promptAsync] = useAuthRequest(
+  const [request, response, signinSignup] = useAuthRequest(
     {
       clientId,
       responseType: ResponseType.Code,
@@ -135,21 +135,21 @@ const LoginContextProvider = ({ children }: LoginContextProviderProps) => {
     } else {
       setIsLoggedIn(false)
     }
-    if (!authTokens || !authTokens.expiresIn) {
-      clearInterval(intervalId!)
-      return
-    }
-    const newIntervalId = setInterval(() => {
-      refreshToken()
-    }, authTokens?.expiresIn * 1000 - 60) // 1 minute less than given, to be safe
+    // if (!authTokens || !authTokens.expiresIn) {
+    //   clearInterval(intervalId!)
+    //   return
+    // }
+    // const newIntervalId = setInterval(() => {
+    //   refreshToken()
+    // }, authTokens?.expiresIn * 1000 - 60) // 1 minute less than given, to be safe
 
-    setIntervalId(newIntervalId)
-    return () => clearInterval(newIntervalId)
+    // setIntervalId(newIntervalId)
+    // return () => clearInterval(newIntervalId)
   }, [authTokens])
 
   return (
     <LoginContext.Provider
-      value={{ isLoggedIn, setIsLoggedIn, promptAsync, logout, authTokens }}
+      value={{ isLoggedIn, setIsLoggedIn, signinSignup, logout, authTokens }}
     >
       {children}
     </LoginContext.Provider>
