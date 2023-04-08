@@ -67,15 +67,20 @@ const LoginContextProvider = ({ children }: LoginContextProviderProps) => {
     discoveryDocument
   )
 
-  const logout = async () => {
-    const revokeResponse = await revokeAsync(
-      {
-        clientId: clientId,
-        token: authTokens?.refreshToken as string,
-      },
-      discoveryDocument
-    )
-    if (revokeResponse) {
+  const logout = async (): Promise<void> => {
+    try {
+      const revokeResponse = await revokeAsync(
+        {
+          clientId: clientId,
+          token: authTokens?.refreshToken as string,
+        },
+        discoveryDocument
+      )
+      if (revokeResponse) {
+        setAuthTokens(null)
+      }
+    } catch (error) {
+      console.error(error)
       setAuthTokens(null)
     }
   }
