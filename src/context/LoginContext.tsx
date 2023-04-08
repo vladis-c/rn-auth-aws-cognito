@@ -41,9 +41,9 @@ export const LoginContext = createContext<LoginProps | null>(null)
 
 WebBrowser.maybeCompleteAuthSession()
 
-const clientId = COGNITO_CLIENT_ID
-const userPoolUrl = COGNITO_USER_POOL_URL
-const redirectUri = COGNITO_REDIRECT_URL
+const clientId = COGNITO_CLIENT_ID || process.env.COGNITO_CLIENT_ID
+const userPoolUrl = COGNITO_USER_POOL_URL || process.env.COGNITO_USER_POOL_URL
+const redirectUri = COGNITO_REDIRECT_URL || process.env.COGNITO_REDIRECT_URL
 
 const LoginContextProvider = ({ children }: LoginContextProviderProps) => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false)
